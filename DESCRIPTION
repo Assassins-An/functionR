@@ -12,6 +12,7 @@ Imports:
     magick,
     base64enc,
     htmltools,
+    plotly,
     ggplot2
 Suggests:
     testthat (>= 3.0.0),
