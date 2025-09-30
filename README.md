@@ -9,7 +9,7 @@ Install from GitHub (after you push the repo):
 
 ```r
 # install.packages("devtools") # if needed
-devtools::install_github("Anbunensi/functionR")
+devtools::install_github("Assassins-An/functionR")
 ```
 
 ## Example
