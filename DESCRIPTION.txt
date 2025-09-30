@@ -1,0 +1,20 @@
+Package: functionR
+Type: Package
+Title: Utility functions for embedding ggplot previews in HTML
+Version: 0.1.0
+Authors@R: person(given = "Anbunensi", family = "", email = "you@example.com", role = c("aut", "cre"))
+Description: Small collection of helper functions to render ggplot objects into embedded PNG data URIs and produce an HTML dropdown preview (for use in Quarto / R Markdown). The package is lightweight and focused on report embedding workflows.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.2
+Imports:
+    magick,
+    base64enc,
+    htmltools,
+    ggplot2
+Suggests:
+    testthat (>= 3.0.0),
+    knitr
+URL: https://github.com/Anbunensi/functionR
+BugReports: https://github.com/Anbunensi/functionR/issues
