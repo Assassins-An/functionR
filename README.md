@@ -24,5 +24,6 @@ p2 <- ggplot(mtcars, aes(factor(cyl), mpg)) + geom_boxplot()
 plots <- list(BoneMarrow = p, Kidney = p2)
 # put this in a chunk with {r, results='asis', echo=FALSE}
 create_plot_dropdown(plots, width = 7, height = 4, units = "in", dpi = 300)
+create_plotly_dropdown(plots)
 ```
 ```
