@@ -8,8 +8,8 @@ Small utilities to render ggplot objects into embedded PNG data URIs and create 
 Install from GitHub (after you push the repo):
 
 ```r
-# install.packages("devtools") # if needed
-devtools::install_github("Assassins-An/functionR")
+# install.packages("remotes") # if needed
+remotes::install_github("Assassins-An/functionR")
 ```
 
 ## Example
