@@ -17,6 +17,7 @@ remotes::install_github("Assassins-An/functionR")
 ```r
 library(functionR)
 library(ggplot2)
+library(plotly)
 
 p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 p2 <- ggplot(mtcars, aes(factor(cyl), mpg)) + geom_boxplot()
