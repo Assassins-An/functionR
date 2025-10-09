@@ -1,11 +1,22 @@
 #' Create a single plotly figure that switches between multiple ggplot/plotly plots via a dropdown
 #'
-#' Combined version with improved legend handling: sets legendgroup and per-button showlegend masks
-#' so that only the selected plot's legend items are shown on initial render and after switching.
+#' Combine multiple ggplot/plotly objects into one plotly htmlwidget with a dropdown menu
+#' to toggle which set of traces is visible. This variant does not set or update a title.
 #'
-create_plotly_dropdown <- function(plots_list, title = "Interactive plots", initial = 1,
-                                   menus_x = 0, menus_y = 1.25,
-                                   menus_xanchor = "left", legend = TRUE) {
+#' @param plots_list A named list of ggplot or plotly objects.
+#' @param initial Integer. 1-based index of which plot to show initially.
+#' @param menus_x Numeric. x-position of the dropdown menu.
+#' @param menus_y Numeric. y-position of the dropdown menu.
+#' @param menus_xanchor Character. x-anchor for the updatemenu ("left", "center", "right").
+#' @param legend Logical. Whether to show the legend for the combined plot.
+#' @return A plotly htmlwidget.
+#' @export
+create_plotly_dropdown <- function(plots_list,
+                                   initial = 1,
+                                   menus_x = -0.5,
+                                   menus_y = 1.15,
+                                   menus_xanchor = "left",
+                                   legend = TRUE) {
   if (!requireNamespace("plotly", quietly = TRUE)) stop("Please install 'plotly'")
   if (!requireNamespace("ggplot2", quietly = TRUE)) stop("Please install 'ggplot2' if you pass ggplot objects")
   if (!is.list(plots_list) || length(plots_list) == 0) stop("plots_list must be a non-empty named list of ggplot/plotly objects")
@@ -88,11 +99,11 @@ create_plotly_dropdown <- function(plots_list, title = "Interactive plots", init
     mask
   })
 
-  # Build buttons: update both visible and showlegend, and relayout title
+  # Build buttons: update both visible and showlegend. No relayout/title updates are performed.
   buttons <- lapply(seq_len(nplots), function(k) {
     restyle_args <- list(visible = vis_list[[k]], showlegend = showlegend_list[[k]])
-    relayout_args <- list(title = paste0(title, " - ", names(plots_list)[k]))
-    list(method = "update", args = list(restyle_args, relayout_args), label = names(plots_list)[k])
+    # Provide an empty relayout argument to ensure the update method has the right shape
+    list(method = "update", args = list(restyle_args, list()), label = names(plots_list)[k])
   })
 
   # set initial visibility and showlegend: only initial traces visible and their legend entries shown
@@ -105,9 +116,8 @@ create_plotly_dropdown <- function(plots_list, title = "Interactive plots", init
     tr
   })
 
-  # Build layout with updatemenus
+  # Build layout with updatemenus (no title)
   combined <- plotly::layout(combined,
-                             # title = paste0(title, " - ", names(plots_list)[initial]),
                              updatemenus = list(list(active = initial - 1,
                                                      buttons = buttons,
                                                      x = menus_x,
