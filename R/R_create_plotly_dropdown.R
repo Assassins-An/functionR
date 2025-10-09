@@ -107,7 +107,7 @@ create_plotly_dropdown <- function(plots_list, title = "Interactive plots", init
 
   # Build layout with updatemenus
   combined <- plotly::layout(combined,
-                             title = paste0(title, " - ", names(plots_list)[initial]),
+                             # title = paste0(title, " - ", names(plots_list)[initial]),
                              updatemenus = list(list(active = initial - 1,
                                                      buttons = buttons,
                                                      x = menus_x,
