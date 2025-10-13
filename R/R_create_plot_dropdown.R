@@ -38,7 +38,7 @@ create_plot_dropdown <- function(plots_list,
   place <- match.arg(place)
   units <- match.arg(units)
 
-  if (!requireNamespace("magick", quietly = TRUE)) stop("Please install 'magick'")
+  if (!requireNamespace("ragg", quietly = TRUE)) stop("Please install 'ragg' (install.packages('ragg'))")
   if (!requireNamespace("base64enc", quietly = TRUE)) stop("Please install 'base64enc'")
   if (!requireNamespace("htmltools", quietly = TRUE)) stop("Please install 'htmltools'")
 
@@ -64,14 +64,31 @@ create_plot_dropdown <- function(plots_list,
   px_width  <- ceiling(width_in  * dpi)
   px_height <- ceiling(height_in * dpi)
 
-  make_data_uri <- function(gg) {
-    img <- magick::image_graph(width = px_width, height = px_height, res = dpi)
-    print(gg)
-    dev.off()
-    raw_png <- magick::image_write(img, format = "png")
-    con <- rawConnection(raw_png, "rb")
+  raw_to_data_uri <- function(raw_vec) {
+    con <- rawConnection(raw_vec, "rb")
     on.exit(close(con), add = TRUE)
-    paste0("data:image/png;base64,", base64enc::base64encode(con))
+    b64 <- base64enc::base64encode(con)
+    paste0("data:image/png;base64,", b64)
+  }
+
+  make_data_uri <- function(gg) {
+    tmpf <- tempfile(fileext = ".png")
+    on.exit({
+      try(unlink(tmpf), silent = TRUE)
+    }, add = TRUE)
+
+    # Use ragg device with pixel dimensions (robust on headless servers)
+    ragg::agg_png(filename = tmpf, width = px_width, height = px_height, units = "px", res = dpi)
+    tryCatch({
+      print(gg)
+      dev.off()
+      raw <- readBin(tmpf, what = "raw", n = file.info(tmpf)$size)
+      raw_to_data_uri(raw)
+    }, error = function(e) {
+      # Ensure device closed on error
+      try(if (dev.cur() > 1) dev.off(), silent = TRUE)
+      stop("ragg rendering failed: ", conditionMessage(e))
+    })
   }
 
   data_uris <- vapply(plots_list, FUN = make_data_uri, FUN.VALUE = character(1), USE.NAMES = TRUE)
