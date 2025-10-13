@@ -10,7 +10,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports:
     DT,
-    magick,
+    ragg,
     base64enc,
     htmltools,
     plotly,
