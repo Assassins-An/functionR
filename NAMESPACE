@@ -1,3 +1,5 @@
 export(create_plot_dropdown)
 export(create_plotly_dropdown)
 export(create_table_dropdown)
+export(create_table_dropdown)
+export(slick_center_carousel)
