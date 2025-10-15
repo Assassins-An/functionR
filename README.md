@@ -27,4 +27,3 @@ plots <- list(BoneMarrow = p, Kidney = p2)
 create_plot_dropdown(plots, width = 7, height = 4, units = "in", dpi = 300)
 create_plotly_dropdown(plots)
 ```
-```
