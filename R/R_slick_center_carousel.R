@@ -54,7 +54,6 @@ slick_center_carousel <- function(
 ) {
   stopifnot(length(imgs) > 0)
 
-  # Optional: natural sort by trailing number
   if (isTRUE(sort_numeric)) {
     ids <- suppressWarnings(
       as.integer(sub(".*_(\\d+)\\.(png|jpg|jpeg|gif)$", "\\1", basename(imgs)))
@@ -64,25 +63,30 @@ slick_center_carousel <- function(
 
   prefix <- if (!is.null(scope_class)) paste0(".", scope_class, " ") else ""
 
+  ## 只替换这一块 css_dots -----------------------------
   css_dots <- htmltools::tags$style(htmltools::HTML(sprintf('
-    /* 基础样式 -------------------------------------------------------------- */
     %1$s.slick-dots {
       list-style: none;
       padding: 0;
-      margin: 12px 0;
+      margin: 12px auto 0 auto;
       display: flex;
-      flex-wrap: wrap;              /* 允许换行 */
-      gap: 6px;
+      flex-wrap: wrap;
       justify-content: center;
+      gap: 6px;
       counter-reset: dot;
+      max-width: calc(10 * 36px); /* 10 个一行，居中 */
     }
     %1$s.slick-dots li {
       margin: 0;
       display: inline-block;
       counter-increment: dot;
+      flex: 0 0 36px;  /* 固定列宽，10 个就是一整行 */
+      text-align: center;
     }
     %1$s.slick-dots li button {
       padding: 0;
+      width: 28px;
+      height: 28px;
     }
     %1$s.slick-dots li button:before {
       content: counter(dot);
@@ -105,15 +109,17 @@ slick_center_carousel <- function(
       border-color: #1d4ed8;
       opacity: 1 !important;
     }
-
-    /* 每 10 个换一“逻辑行”：第 11、21、31... 个点加上额外上边距 --------- */
-    %1$s.slick-dots li:nth-child(n+11) {
+    %1$s.slick-dots li:nth-child(11),
+    %1$s.slick-dots li:nth-child(21),
+    %1$s.slick-dots li:nth-child(31),
+    %1$s.slick-dots li:nth-child(41),
+    %1$s.slick-dots li:nth-child(51),
+    %1$s.slick-dots li:nth-child(61),
+    %1$s.slick-dots li:nth-child(71),
+    %1$s.slick-dots li:nth-child(81),
+    %1$s.slick-dots li:nth-child(91) {
       margin-top: 6px;
     }
-
-    /* 如果你希望严格 10 个一行，也可以给 li 设置固定宽度（按需要解开注释） */
-    /* %1$s.slick-dots li { flex: 0 0 auto; } */
-
     %1$s.slick-slide img {
       width: 100%% !important;
       height: auto !important;
