@@ -37,23 +37,24 @@
 #' @importFrom htmltools tags HTML tagList div
 #' @importFrom htmlwidgets onRender
 slick_center_carousel <- function(
-  imgs,
-  width          = "90%",
-  height         = "380px",
-  centerPadding  = "100px",
-  side_scale     = 0.80,
-  center_scale   = 1.00,
-  side_opacity   = 0.45,
-  dots           = TRUE,
-  arrows         = TRUE,
-  autoplay       = FALSE,
-  focusOnSelect  = TRUE,
-  adaptiveHeight = TRUE,
-  sort_numeric   = FALSE,
-  scope_class    = NULL
-) {
+                                  imgs,
+                                  width          = "90%",
+                                  height         = "380px",
+                                  centerPadding  = "100px",
+                                  side_scale     = 0.80,
+                                  center_scale   = 1.00,
+                                  side_opacity   = 0.45,
+                                  dots           = TRUE,
+                                  arrows         = TRUE,
+                                  autoplay       = FALSE,
+                                  focusOnSelect  = TRUE,
+                                  adaptiveHeight = TRUE,
+                                  sort_numeric   = FALSE,
+                                  scope_class    = NULL
+                                ) {
   stopifnot(length(imgs) > 0)
 
+  # Optional: natural sort by trailing number
   if (isTRUE(sort_numeric)) {
     ids <- suppressWarnings(
       as.integer(sub(".*_(\\d+)\\.(png|jpg|jpeg|gif)$", "\\1", basename(imgs)))
@@ -63,30 +64,25 @@ slick_center_carousel <- function(
 
   prefix <- if (!is.null(scope_class)) paste0(".", scope_class, " ") else ""
 
-  ## 只替换这一块 css_dots -----------------------------
   css_dots <- htmltools::tags$style(htmltools::HTML(sprintf('
+    /* dots 自动换行 + 居中 -------------------------------------------------- */
     %1$s.slick-dots {
       list-style: none;
       padding: 0;
-      margin: 12px auto 0 auto;
+      margin: 12px 0;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: wrap;              /* 关键：允许自动换行 */
       justify-content: center;
-      gap: 6px;
+      gap: 6px;                     /* 行内 & 行间 都用 gap 控制间距 */
       counter-reset: dot;
-      max-width: calc(10 * 36px); /* 10 个一行，居中 */
     }
     %1$s.slick-dots li {
       margin: 0;
       display: inline-block;
       counter-increment: dot;
-      flex: 0 0 36px;  /* 固定列宽，10 个就是一整行 */
-      text-align: center;
     }
     %1$s.slick-dots li button {
       padding: 0;
-      width: 28px;
-      height: 28px;
     }
     %1$s.slick-dots li button:before {
       content: counter(dot);
@@ -108,17 +104,6 @@ slick_center_carousel <- function(
       color: #fff;
       border-color: #1d4ed8;
       opacity: 1 !important;
-    }
-    %1$s.slick-dots li:nth-child(11),
-    %1$s.slick-dots li:nth-child(21),
-    %1$s.slick-dots li:nth-child(31),
-    %1$s.slick-dots li:nth-child(41),
-    %1$s.slick-dots li:nth-child(51),
-    %1$s.slick-dots li:nth-child(61),
-    %1$s.slick-dots li:nth-child(71),
-    %1$s.slick-dots li:nth-child(81),
-    %1$s.slick-dots li:nth-child(91) {
-      margin-top: 6px;
     }
     %1$s.slick-slide img {
       width: 100%% !important;
