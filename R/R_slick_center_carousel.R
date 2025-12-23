@@ -57,7 +57,7 @@ slick_center_carousel <- function(
   # Optional: natural sort by trailing number
   if (isTRUE(sort_numeric)) {
     ids <- suppressWarnings(
-      as.integer(sub(".*_(\\\n\\d+)\\.(png|jpg|jpeg|gif)$", "\\1", basename(imgs)))
+      as.integer(sub(".*_(\\d+)\\.(png|jpg|jpeg|gif)$", "\\1", basename(imgs)))
     )
     imgs <- imgs[order(ids, na.last = NA)]
   }
@@ -65,30 +65,75 @@ slick_center_carousel <- function(
   prefix <- if (!is.null(scope_class)) paste0(".", scope_class, " ") else ""
 
   css_dots <- htmltools::tags$style(htmltools::HTML(sprintf('
-    %s.slick-dots {
-      list-style: none; padding: 0; margin: 12px 0;
-      display: flex; gap: 6px; justify-content: center; counter-reset: dot;
+    /* 基础样式 -------------------------------------------------------------- */
+    %1$s.slick-dots {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+      display: flex;
+      flex-wrap: wrap;              /* 允许换行 */
+      gap: 6px;
+      justify-content: center;
+      counter-reset: dot;
     }
-    %s.slick-dots li { margin: 0; display: inline-block; counter-increment: dot; }
-    %s.slick-dots li button:before {
+    %1$s.slick-dots li {
+      margin: 0;
+      display: inline-block;
+      counter-increment: dot;
+    }
+    %1$s.slick-dots li button {
+      padding: 0;
+    }
+    %1$s.slick-dots li button:before {
       content: counter(dot);
-      display: inline-block; text-align: center;
-      width: 28px; height: 28px; line-height: 28px;
-      background: #e5e7eb; color: #111827; border: 1px solid #9ca3af; border-radius: 4px;
-      font-weight: 700; font-size: 13px; opacity: 1 !important;
+      display: inline-block;
+      text-align: center;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      background: #e5e7eb;
+      color: #111827;
+      border: 1px solid #9ca3af;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 13px;
+      opacity: 1 !important;
     }
-    %s.slick-dots li.slick-active button:before {
-      background: #2563eb; color: #fff; border-color: #1d4ed8; opacity: 1 !important;
+    %1$s.slick-dots li.slick-active button:before {
+      background: #2563eb;
+      color: #fff;
+      border-color: #1d4ed8;
+      opacity: 1 !important;
     }
-    %s.slick-slide img { width: 100%% !important; height: auto !important; display: block; }
-  ', prefix, prefix, prefix, prefix, prefix)))
+
+    /* 每 10 个换一“逻辑行”：第 11、21、31... 个点加上额外上边距 --------- */
+    %1$s.slick-dots li:nth-child(n+11) {
+      margin-top: 6px;
+    }
+
+    /* 如果你希望严格 10 个一行，也可以给 li 设置固定宽度（按需要解开注释） */
+    /* %1$s.slick-dots li { flex: 0 0 auto; } */
+
+    %1$s.slick-slide img {
+      width: 100%% !important;
+      height: auto !important;
+      display: block;
+    }
+  ', prefix)))
 
   css_fx <- htmltools::tags$style(htmltools::HTML(sprintf('
-    %s.slick-slide { opacity: %s; transition: transform .22s ease, opacity .22s ease; }
-    %s.slick-center { opacity: 1; }
-    %s.slick-slide img { transform: scale(%s); }
-    %s.slick-center img { transform: scale(%s); }
-  ', prefix, as.character(side_opacity), prefix, prefix, as.character(side_scale), prefix, as.character(center_scale))))
+    %1$s.slick-slide {
+      opacity: %2$s;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+    %1$s.slick-center { opacity: 1; }
+    %1$s.slick-slide img { transform: scale(%3$s); }
+    %1$s.slick-center img { transform: scale(%4$s); }
+  ', prefix,
+     as.character(side_opacity),
+     as.character(side_scale),
+     as.character(center_scale)
+  )))
 
   w <- slickR::slickR(imgs, slideType = "img", width = width, height = height) +
     slickR::settings(
