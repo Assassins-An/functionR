@@ -19,21 +19,49 @@ create_image_dropdown <- function(
   select_id = "image-dropdown-select",
   preview_id = "image-dropdown-preview",
   width = "90%",
-  max_height = "620px"
+  max_height = "620px",
+  embed = TRUE
 ) {
   if (is.null(img_df) || nrow(img_df) == 0) {
     cat("<p>No images to display.</p>")
     return(invisible(NULL))
   }
 
-  img_df <- img_df[!is.na(img_df[[file_col]]) & file.exists(img_df[[file_col]]), , drop = FALSE]
+  img_df <- img_df[!is.na(img_df[[file_col]]) & nzchar(img_df[[file_col]]), , drop = FALSE]
 
   if (nrow(img_df) == 0) {
     cat("<p>No image files found.</p>")
     return(invisible(NULL))
   }
 
-  img_src <- normalizePath(img_df[[file_col]], winslash = "/", mustWork = TRUE)
+  img_input <- as.character(img_df[[file_col]])
+
+  is_data_uri <- grepl("^data:image/", img_input)
+
+  if (embed) {
+    img_src <- ifelse(
+      is_data_uri,
+      img_input,
+      vapply(img_input, knitr::image_uri, character(1))
+    )
+  } else {
+    keep <- is_data_uri | file.exists(img_input)
+    img_df <- img_df[keep, , drop = FALSE]
+    img_input <- img_input[keep]
+    is_data_uri <- is_data_uri[keep]
+
+    if (nrow(img_df) == 0) {
+      cat("<p>No image files found.</p>")
+      return(invisible(NULL))
+    }
+
+    img_src <- ifelse(
+      is_data_uri,
+      img_input,
+      normalizePath(img_input, winslash = "/", mustWork = TRUE)
+    )
+  }
+
   labels <- as.character(img_df[[label_col]])
 
   options_html <- paste0(
